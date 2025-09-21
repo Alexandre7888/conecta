@@ -168,23 +168,6 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        
-        .debug-info {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #f5f6f7;
-            border-radius: 6px;
-            font-size: 12px;
-            color: #606770;
-            display: none;
-        }
-        
-        @media (max-width: 480px) {
-            .container {
-                box-shadow: none;
-                background-color: transparent;
-            }
-        }
     </style>
 </head>
 <body>
@@ -202,10 +185,10 @@
         </div>
         
         <div class="input-group">
-            <input type="email" id="login-email" placeholder="Email" value="teste@exemplo.com">
+            <input type="email" id="login-email" placeholder="Email">
         </div>
         <div class="input-group">
-            <input type="password" id="login-password" placeholder="Senha" value="123456">
+            <input type="password" id="login-password" placeholder="Senha">
         </div>
         <button class="btn btn-primary" onclick="login()">Entrar</button>
         <div class="link" onclick="showForgotPassword()">Esqueceu a senha?</div>
@@ -214,13 +197,6 @@
             <i class="fab fa-google"></i> Entrar com Google
         </button>
         <div class="link" onclick="window.location.href='register.html'">Criar nova conta</div>
-        
-        <div class="debug-info" id="debug-info">
-            <p><strong>Informações de Debug:</strong></p>
-            <p id="debug-status">Status: Não conectado</p>
-            <p id="debug-config">Config: Carregando...</p>
-            <button onclick="testFirebaseConnection()">Testar Conexão Firebase</button>
-        </div>
     </div>
 
     <!-- Firebase App -->
@@ -231,7 +207,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     
     <script>
-        // Configuração do Firebase - SUAS CREDENCIAIS
+        // Configuração do Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyDqwg6fya9F2T_0zCvVc5pzL3jK2pXqZ1Q",
             authDomain: "html-785e3.firebaseapp.com",
@@ -243,54 +219,10 @@
             measurementId: "G-KEPDBKP6MJ"
         };
         
-        // Mostrar informações de configuração
-        document.getElementById('debug-config').textContent = 
-            `Projeto: ${firebaseConfig.projectId}, AuthDomain: ${firebaseConfig.authDomain}`;
-        
         // Inicializar Firebase
-        let auth, database;
-        try {
-            firebase.initializeApp(firebaseConfig);
-            auth = firebase.auth();
-            database = firebase.database();
-            document.getElementById('debug-status').textContent = 'Status: Firebase inicializado com sucesso';
-        } catch (error) {
-            document.getElementById('debug-status').textContent = 'Status: Erro ao inicializar Firebase: ' + error.message;
-            console.error('Erro ao inicializar Firebase:', error);
-        }
-        
-        // Mostrar informações de debug
-        document.getElementById('debug-info').style.display = 'block';
-        
-        // Função para testar conexão com Firebase
-        function testFirebaseConnection() {
-            showLoading();
-            document.getElementById('debug-status').textContent = 'Status: Testando conexão...';
-            
-            // Testar se o Firebase foi inicializado corretamente
-            if (!auth) {
-                showError('Firebase não foi inicializado. Verifique o console para detalhes.');
-                document.getElementById('debug-status').textContent = 'Status: Firebase não inicializado';
-                return;
-            }
-            
-            // Testar conexão com Realtime Database
-            database.ref('.info/connected').once('value')
-                .then((snapshot) => {
-                    if (snapshot.val() === true) {
-                        document.getElementById('debug-status').textContent = 'Status: Conectado ao Firebase Realtime Database';
-                        showSuccess('Conexão com Firebase estabelecida com sucesso!');
-                    } else {
-                        document.getElementById('debug-status').textContent = 'Status: Não conectado ao Database';
-                        showError('Não foi possível conectar ao Firebase Realtime Database');
-                    }
-                })
-                .catch((error) => {
-                    document.getElementById('debug-status').textContent = 'Status: Erro de conexão: ' + error.message;
-                    showError('Erro ao conectar com Firebase: ' + error.message);
-                    console.error('Erro de conexão:', error);
-                });
-        }
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
         
         // Função de login
         function login() {
@@ -304,19 +236,20 @@
             
             showLoading();
             
+            // 1. Fazer login no Firebase Authentication
             auth.signInWithEmailAndPassword(email, password)
                 .then((userCredential) => {
                     const user = userCredential.user;
-                    console.log('Usuário logado:', user);
+                    console.log('Usuário logado no Auth:', user.uid);
                     
-                    // Buscar dados do usuário no Realtime Database
+                    // 2. Buscar dados adicionais no Realtime Database
                     return database.ref('users/' + user.uid).once('value');
                 })
                 .then((snapshot) => {
                     if (snapshot.exists()) {
                         const userData = snapshot.val();
                         
-                        // Salvar informações no localStorage
+                        // 3. Salvar informações no localStorage
                         localStorage.setItem('user', JSON.stringify({
                             uid: userData.uid,
                             email: userData.email,
@@ -325,29 +258,27 @@
                         
                         showSuccess('Login realizado com sucesso!');
                         
-                        // Redirecionar para o feed
+                        // 4. Redirecionar para o feed
                         setTimeout(() => {
                             window.location.href = 'feed.html';
                         }, 1000);
                     } else {
-                        // Se não existir no Database, criar registro
+                        // Se não existir no Database, criar um registro básico
                         const user = auth.currentUser;
                         return database.ref('users/' + user.uid).set({
                             uid: user.uid,
-                            name: user.email.split('@')[0], // Usar parte do email como nome
+                            name: user.email.split('@')[0],
                             email: user.email,
                             createdAt: Date.now()
                         }).then(() => {
-                            // Salvar informações no localStorage
                             localStorage.setItem('user', JSON.stringify({
                                 uid: user.uid,
                                 email: user.email,
                                 name: user.email.split('@')[0]
                             }));
                             
-                            showSuccess('Login realizado com sucesso! Perfil criado.');
+                            showSuccess('Login realizado! Perfil básico criado.');
                             
-                            // Redirecionar para o feed
                             setTimeout(() => {
                                 window.location.href = 'feed.html';
                             }, 1000);
@@ -388,7 +319,7 @@
             auth.signInWithPopup(provider)
                 .then((result) => {
                     const user = result.user;
-                    console.log('Usuário Google logado:', user);
+                    console.log('Usuário Google logado:', user.uid);
                     
                     // Verificar se é um novo usuário
                     const isNewUser = result.additionalUserInfo.isNewUser;
@@ -409,28 +340,17 @@
                 })
                 .then((snapshot) => {
                     const user = auth.currentUser;
-                    let userData;
-                    
-                    if (snapshot && snapshot.exists()) {
-                        userData = snapshot.val();
-                    } else {
-                        userData = {
-                            name: user.displayName,
-                            email: user.email
-                        };
-                    }
                     
                     // Salvar informações no localStorage
                     localStorage.setItem('user', JSON.stringify({
                         uid: user.uid,
-                        email: userData.email,
-                        name: userData.name,
+                        email: user.email,
+                        name: user.displayName,
                         photoURL: user.photoURL
                     }));
                     
                     showSuccess('Login com Google realizado!');
                     
-                    // Redirecionar para o feed
                     setTimeout(() => {
                         window.location.href = 'feed.html';
                     }, 1000);
@@ -479,17 +399,9 @@
         // Verificar se o usuário já está logado
         auth.onAuthStateChanged((user) => {
             if (user) {
-                console.log('Usuário já autenticado:', user);
-                document.getElementById('debug-status').textContent = 'Status: Usuário autenticado, redirecionando...';
+                console.log('Usuário já autenticado, redirecionando...');
                 window.location.href = 'feed.html';
-            } else {
-                document.getElementById('debug-status').textContent = 'Status: Usuário não autenticado';
             }
-        });
-        
-        // Testar conexão automaticamente ao carregar a página
-        window.addEventListener('load', () => {
-            setTimeout(testFirebaseConnection, 1000);
         });
     </script>
 </body>
