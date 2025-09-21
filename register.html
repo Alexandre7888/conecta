@@ -99,6 +99,9 @@
             font-size: 13px;
             text-align: center;
             margin: 10px 0;
+            padding: 10px;
+            border-radius: 6px;
+            background-color: #ffe5e9;
             display: none;
         }
         
@@ -107,6 +110,9 @@
             font-size: 13px;
             text-align: center;
             margin: 10px 0;
+            padding: 10px;
+            border-radius: 6px;
+            background-color: #e9f5eb;
             display: none;
         }
         
@@ -138,20 +144,20 @@
         <div class="success" id="success-message"></div>
         
         <div class="loading" id="loading">
-            <i class="fas fa-spinner"></i>
+            <i class="fas fa-spinner"></i> Criando sua conta...
         </div>
         
         <div class="input-group">
-            <input type="text" id="register-name" placeholder="Nome completo">
+            <input type="text" id="register-name" placeholder="Nome completo" value="Teste Usuário">
         </div>
         <div class="input-group">
-            <input type="email" id="register-email" placeholder="Email">
+            <input type="email" id="register-email" placeholder="Email" value="teste@exemplo.com">
         </div>
         <div class="input-group">
-            <input type="password" id="register-password" placeholder="Senha">
+            <input type="password" id="register-password" placeholder="Senha" value="123456">
         </div>
         <div class="input-group">
-            <input type="password" id="register-confirm-password" placeholder="Confirmar senha">
+            <input type="password" id="register-confirm-password" placeholder="Confirmar senha" value="123456">
         </div>
         <button class="btn btn-primary" onclick="register()">Criar Conta</button>
         <div class="link" onclick="window.location.href='auth.html'">Já tem uma conta? Faça login</div>
@@ -165,7 +171,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     
     <script>
-        // Configuração do Firebase
+        // Configuração do Firebase - SUAS CREDENCIAIS
         const firebaseConfig = {
             apiKey: "AIzaSyDqwg6fya9F2T_0zCvVc5pzL3jK2pXqZ1Q",
             authDomain: "html-785e3.firebaseapp.com",
@@ -178,9 +184,16 @@
         };
         
         // Inicializar Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const database = firebase.database();
+        let auth, database;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            auth = firebase.auth();
+            database = firebase.database();
+            console.log('Firebase inicializado com sucesso');
+        } catch (error) {
+            console.error('Erro ao inicializar Firebase:', error);
+            showError('Erro de configuração do Firebase. Verifique o console.');
+        }
         
         // Função de registro
         function register() {
@@ -210,6 +223,7 @@
             auth.createUserWithEmailAndPassword(email, password)
                 .then((userCredential) => {
                     const user = userCredential.user;
+                    console.log('Usuário criado:', user);
                     
                     // Salvar dados do usuário no Realtime Database
                     return database.ref('users/' + user.uid).set({
@@ -238,7 +252,27 @@
                     }, 1000);
                 })
                 .catch((error) => {
-                    showError('Erro ao criar conta: ' + error.message);
+                    console.error('Erro ao criar conta:', error);
+                    let errorMessage = 'Erro ao criar conta: ';
+                    
+                    switch (error.code) {
+                        case 'auth/email-already-in-use':
+                            errorMessage += 'Este email já está em uso.';
+                            break;
+                        case 'auth/invalid-email':
+                            errorMessage += 'Email inválido.';
+                            break;
+                        case 'auth/operation-not-allowed':
+                            errorMessage += 'Operação não permitida.';
+                            break;
+                        case 'auth/weak-password':
+                            errorMessage += 'Senha muito fraca.';
+                            break;
+                        default:
+                            errorMessage += error.message;
+                    }
+                    
+                    showError(errorMessage);
                 });
         }
         
@@ -246,12 +280,14 @@
         function showError(message) {
             document.getElementById('error-message').textContent = message;
             document.getElementById('error-message').style.display = 'block';
+            document.getElementById('success-message').style.display = 'none';
             document.getElementById('loading').style.display = 'none';
         }
         
         function showSuccess(message) {
             document.getElementById('success-message').textContent = message;
             document.getElementById('success-message').style.display = 'block';
+            document.getElementById('error-message').style.display = 'none';
             document.getElementById('loading').style.display = 'none';
         }
         
@@ -264,6 +300,7 @@
         // Verificar se o usuário já está logado
         auth.onAuthStateChanged((user) => {
             if (user) {
+                console.log('Usuário já autenticado, redirecionando...');
                 window.location.href = 'feed.html';
             }
         });
