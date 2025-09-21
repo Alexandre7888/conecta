@@ -42,6 +42,11 @@
             margin-bottom: 10px;
         }
         
+        .logo p {
+            color: #606770;
+            font-size: 1rem;
+        }
+        
         .input-group {
             margin-bottom: 15px;
         }
@@ -131,6 +136,15 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
+        .debug-info {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f5f6f7;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #606770;
+        }
     </style>
 </head>
 <body>
@@ -148,19 +162,23 @@
         </div>
         
         <div class="input-group">
-            <input type="text" id="register-name" placeholder="Nome completo" value="Teste Usuário">
+            <input type="text" id="register-name" placeholder="Nome completo">
         </div>
         <div class="input-group">
-            <input type="email" id="register-email" placeholder="Email" value="teste@exemplo.com">
+            <input type="email" id="register-email" placeholder="Email">
         </div>
         <div class="input-group">
-            <input type="password" id="register-password" placeholder="Senha" value="123456">
+            <input type="password" id="register-password" placeholder="Senha">
         </div>
         <div class="input-group">
-            <input type="password" id="register-confirm-password" placeholder="Confirmar senha" value="123456">
+            <input type="password" id="register-confirm-password" placeholder="Confirmar senha">
         </div>
         <button class="btn btn-primary" onclick="register()">Criar Conta</button>
         <div class="link" onclick="window.location.href='auth.html'">Já tem uma conta? Faça login</div>
+        
+        <div class="debug-info">
+            <p><strong>Informações:</strong> Sua conta será salva no Firebase Authentication e no Realtime Database.</p>
+        </div>
     </div>
 
     <!-- Firebase App -->
@@ -171,7 +189,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     
     <script>
-        // Configuração do Firebase - SUAS CREDENCIAIS
+        // Configuração do Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyDqwg6fya9F2T_0zCvVc5pzL3jK2pXqZ1Q",
             authDomain: "html-785e3.firebaseapp.com",
@@ -184,16 +202,9 @@
         };
         
         // Inicializar Firebase
-        let auth, database;
-        try {
-            firebase.initializeApp(firebaseConfig);
-            auth = firebase.auth();
-            database = firebase.database();
-            console.log('Firebase inicializado com sucesso');
-        } catch (error) {
-            console.error('Erro ao inicializar Firebase:', error);
-            showError('Erro de configuração do Firebase. Verifique o console.');
-        }
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
         
         // Função de registro
         function register() {
@@ -219,13 +230,14 @@
             
             showLoading();
             
-            // Criar usuário
+            // 1. Primeiro criamos a conta no Firebase Authentication
             auth.createUserWithEmailAndPassword(email, password)
                 .then((userCredential) => {
+                    // Conta criada com sucesso no Authentication
                     const user = userCredential.user;
-                    console.log('Usuário criado:', user);
+                    console.log('Usuário criado no Auth:', user.uid);
                     
-                    // Salvar dados do usuário no Realtime Database
+                    // 2. Agora salvamos os dados adicionais no Realtime Database
                     return database.ref('users/' + user.uid).set({
                         uid: user.uid,
                         name: name,
@@ -236,7 +248,7 @@
                     });
                 })
                 .then(() => {
-                    // Salvar informações no localStorage
+                    // 3. Salvamos também no localStorage para uso imediato
                     const user = auth.currentUser;
                     localStorage.setItem('user', JSON.stringify({
                         uid: user.uid,
@@ -244,35 +256,16 @@
                         name: name
                     }));
                     
-                    showSuccess('Conta criada com sucesso!');
+                    showSuccess('Conta criada com sucesso! Redirecionando...');
                     
-                    // Redirecionar para o feed
+                    // 4. Redirecionar para o feed
                     setTimeout(() => {
                         window.location.href = 'feed.html';
-                    }, 1000);
+                    }, 1500);
                 })
                 .catch((error) => {
-                    console.error('Erro ao criar conta:', error);
-                    let errorMessage = 'Erro ao criar conta: ';
-                    
-                    switch (error.code) {
-                        case 'auth/email-already-in-use':
-                            errorMessage += 'Este email já está em uso.';
-                            break;
-                        case 'auth/invalid-email':
-                            errorMessage += 'Email inválido.';
-                            break;
-                        case 'auth/operation-not-allowed':
-                            errorMessage += 'Operação não permitida.';
-                            break;
-                        case 'auth/weak-password':
-                            errorMessage += 'Senha muito fraca.';
-                            break;
-                        default:
-                            errorMessage += error.message;
-                    }
-                    
-                    showError(errorMessage);
+                    console.error('Erro completo:', error);
+                    showError('Erro ao criar conta: ' + error.message);
                 });
         }
         
@@ -300,7 +293,6 @@
         // Verificar se o usuário já está logado
         auth.onAuthStateChanged((user) => {
             if (user) {
-                console.log('Usuário já autenticado, redirecionando...');
                 window.location.href = 'feed.html';
             }
         });
