@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conecta - Perfil</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f0f2f5;
+            color: #1c1e21;
+        }
+        
+        .header {
+            background-color: #1877f2;
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e4e6eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #1877f2;
+        }
+        
+        .nav-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 6px 12px;
+            border-radius: 4px;
+        }
+        
+        .nav-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        
+        .profile-header {
+            background-color: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+        
+        .profile-avatar-large {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background-color: #e4e6eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            font-weight: bold;
+            color: #1877f2;
+        }
+        
+        .profile-info {
+            flex: 1;
+        }
+        
+        .profile-name-large {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .profile-bio {
+            color: #65676b;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        
+        .profile-stats {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .profile-stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-weight: bold;
+            font-size: 20px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #65676b;
+        }
+        
+        .profile-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            background-color: #1877f2;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .action-btn-secondary {
+            background-color: #e4e6eb;
+            color: #4b4f56;
+        }
+        
+        .profile-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+        }
+        
+        .profile-sidebar {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 25px;
+        }
+        
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e4e6eb;
+        }
+        
+        .detail-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .detail-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #e4e6eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: #1877f2;
+        }
+        
+        .detail-info {
+            flex: 1;
+        }
+        
+        .detail-label {
+            font-size: 12px;
+            color: #65676b;
+        }
+        
+        .detail-value {
+            font-weight: 500;
+        }
+        
+        .profile-feed {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-tabs {
+            display: flex;
+            border-bottom: 1px solid #e4e6eb;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #65676b;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab.active {
+            color: #1877f2;
+            border-bottom-color: #1877f2;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .post {
+            background-color: #f0f2f5;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .post-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e4e6eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #1877f2;
+            margin-right: 10px;
+        }
+        
+        .post-author {
+            font-weight: 600;
+        }
+        
+        .post-time {
+            color: #65676b;
+            font-size: 12px;
+            margin-top: 2px;
+        }
+        
+        .post-content {
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+        
+        .post-footer {
+            display: flex;
+            border-top: 1px solid #e4e6eb;
+            padding-top: 10px;
+        }
+        
+        .like-btn, .comment-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: none;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #65676b;
+        }
+        
+        .like-btn:hover, .comment-btn:hover {
+            background-color: #e4e6eb;
+        }
+        
+        .friends-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        
+        .friend-card {
+            background-color: #f0f2f5;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .friend-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: #e4e6eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #1877f2;
+            margin: 0 auto 10px;
+            font-size: 30px;
+        }
+        
+        .friend-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .friend-mutual {
+            color: #65676b;
+            font-size: 12px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px 0;
+        }
+        
+        .loading i {
+            color: #1877f2;
+            animation: spin 1s linear infinite;
+            font-size: 30px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .profile-stats {
+                justify-content: center;
+            }
+            
+            .profile-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .friends-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">Conecta</div>
+        <div class="header-actions">
+            <button class="nav-btn" onclick="window.location.href='feed.html'">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </button>
+            <div class="user-info">
+                <div class="user-avatar" id="user-avatar">U</div>
+                <span id="user-name">Usuário</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="profile-header">
+            <div class="profile-avatar-large" id="profile-avatar-large">U</div>
+            <div class="profile-info">
+                <h1 class="profile-name-large" id="profile-name-large">Usuário</h1>
+                <p class="profile-bio" id="profile-bio">Bem-vindo ao Conecta!</p>
+                <div class="profile-stats">
+                    <div class="profile-stat">
+                        <div class="stat-value" id="post-count">0</div>
+                        <div class="stat-label">Publicações</div>
+                    </div>
+                    <div class="profile-stat">
+                        <div class="stat-value" id="follower-count">0</div>
+                        <div class="stat-label">Seguidores</div>
+                    </div>
+                    <div class="profile-stat">
+                        <div class="stat-value" id="following-count">0</div>
+                        <div class="stat-label">Seguindo</div>
+                    </div>
+                </div>
+                <div class="profile-actions">
+                    <button class="action-btn">Editar Perfil</button>
+                    <button class="action-btn action-btn-secondary">Compartilhar</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="profile-content">
+            <div class="profile-sidebar">
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title">Detalhes</h3>
+                    <div class="detail-item">
+                        <div class="detail-icon">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <div class="detail-info">
+                            <div class="detail-label">Trabalho</div>
+                            <div class="detail-value" id="detail-work">Não informado</div>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div class="detail-info">
+                            <div class="detail-label">Educação</div>
+                            <div class="detail-value" id="detail-education">Não informado</div>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <div class="detail-info">
+                            <div class="detail-label">Cidade</div>
+                            <div class="detail-value" id="detail-city">Não informada</div>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="detail-info">
+                            <div class="detail-label">Localização</div>
+                            <div class="detail-value" id="detail-location">Não informada</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title">Amigos</h3>
+                    <div class="detail-item">
+                        <div class="detail-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="detail-info">
+                            <div class="detail-label">Amigos</div>
+                            <div class="detail-value" id="friend-count">0 amigos</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="profile-feed">
+                <div class="section-tabs">
+                    <div class="tab active" onclick="switchTab('posts')">Publicações</div>
+                    <div class="tab" onclick="switchTab('friends')">Amigos</div>
+                    <div class="tab" onclick="switchTab('photos')">Fotos</div>
+                </div>
+                
+                <div id="tab-posts" class="tab-content active">
+                    <div id="user-posts">
+                        <div class="loading">
+                            <i class="fas fa-spinner"></i>
+                            <p>Carregando publicações...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="tab-friends" class="tab-content">
+                    <div class="friends-grid" id="friends-list">
+                        <!-- Amigos serão carregados aqui -->
+                    </div>
+                </div>
+                
+                <div id="tab-photos" class="tab-content">
+                    <p>Nenhuma foto ainda.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase App -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <!-- Firebase Authentication -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <!-- Firebase Realtime Database -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    
+    <script>
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDqwg6fya9F2T_0zCvVc5pzL3jK2pXqZ1Q",
+            authDomain: "html-785e3.firebaseapp.com",
+            databaseURL: "https://html-785e3-default-rtdb.firebaseio.com",
+            projectId: "html-785e3",
+            storageBucket: "html-785e3.firebasestorage.app",
+            messagingSenderId: "389467952076",
+            appId: "1:389467952076:web:fcad8e95181b9050494369",
+            measurementId: "G-KEPDBKP6MJ"
+        };
+        
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+        
+        // Elementos da UI
+        const userAvatar = document.getElementById('user-avatar');
+        const userName = document.getElementById('user-name');
+        const profileAvatarLarge = document.getElementById('profile-avatar-large');
+        const profileNameLarge = document.getElementById('profile-name-large');
+        const profileBio = document.getElementById('profile-bio');
+        const postCount = document.getElementById('post-count');
+        const followerCount = document.getElementById('follower-count');
+        const followingCount = document.getElementById('following-count');
+        const userPosts = document.getElementById('user-posts');
+        
+        // Variáveis globais
+        let currentUser = null;
+        let userData = null;
+        
+        // Verificar autenticação
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUser = user;
+                loadUserData();
+                loadUserPosts();
+            } else {
+                window.location.href = 'auth.html';
+            }
+        });
+        
+        // Carregar dados do usuário
+        function loadUserData() {
+            const storedUser = localStorage.getItem('user');
+            
+            if (storedUser) {
+                userData = JSON.parse(storedUser);
+                updateUserInterface();
+                
+                // Buscar dados adicionais do Realtime Database
+                database.ref('users/' + currentUser.uid).once('value')
+                    .then((snapshot) => {
+                        if (snapshot.exists()) {
+                            const dbData = snapshot.val();
+                            userData = { ...userData, ...dbData };
+                            localStorage.setItem('user', JSON.stringify(userData));
+                            updateUserInterface();
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Erro ao carregar dados do usuário:', error);
+                    });
+            } else {
+                window.location.href = 'auth.html';
+            }
+        }
+        
+        // Atualizar interface com dados do usuário
+        function updateUserInterface() {
+            if (userData) {
+                const firstLetter = userData.name ? userData.name.charAt(0).toUpperCase() : 'U';
+                userAvatar.textContent = firstLetter;
+                profileAvatarLarge.textContent = firstLetter;
+                
+                if (userData.name) {
+                    userName.textContent = userData.name;
+                    profileNameLarge.textContent = userData.name;
+                }
+                
+                if (userData.bio) {
+                    profileBio.textContent = userData.bio;
+                }
+                
+                // Carregar estatísticas
+                loadUserStats();
+            }
+        }
+        
+        // Carregar estatísticas do usuário
+        function loadUserStats() {
+            if (!currentUser) return;
+            
+            // Contar posts do usuário
+            database.ref('posts').orderByChild('userId').equalTo(currentUser.uid).once('value')
+                .then(snapshot => {
+                    postCount.textContent = snapshot.numChildren();
+                });
+                
+            // Contar seguidores
+            database.ref('followers').orderByChild('followingId').equalTo(currentUser.uid).once('value')
+                .then(snapshot => {
+                    followerCount.textContent = snapshot.numChildren();
+                });
+                
+            // Contar seguindo
+            database.ref('following').orderByChild('followerId').equalTo(currentUser.uid).once('value')
+                .then(snapshot => {
+                    followingCount.textContent = snapshot.numChildren();
+                });
+        }
+        
+        // Carregar posts do usuário
+        function loadUserPosts() {
+            if (!currentUser) return;
+            
+            userPosts.innerHTML = `
+                <div class="loading">
+                    <i class="fas fa-spinner"></i>
+                    <p>Carregando publicações...</p>
+                </div>
+            `;
+            
+            database.ref('posts').orderByChild('userId').equalTo(currentUser.uid).once('value')
+                .then((snapshot) => {
+                    userPosts.innerHTML = '';
+                    
+                    if (!snapshot.exists()) {
+                        userPosts.innerHTML = '<p>Nenhuma publicação ainda.</p>';
+                        return;
+                    }
+                    
+                    // Converter snapshot para array e ordenar por timestamp (mais recente primeiro)
+                    const posts = [];
+                    snapshot.forEach((childSnapshot) => {
+                        posts.push({
+                            id: childSnapshot.key,
+                            ...childSnapshot.val()
+                        });
+                    });
+                    
+                    posts.reverse(); // Ordenar do mais recente para o mais antigo
+                    
+                    if (posts.length === 0) {
+                        userPosts.innerHTML = '<p>Nenhuma publicação ainda.</p>';
+                        return;
+                    }
+                    
+                    posts.forEach((post) => {
+                        const postDate = new Date(post.timestamp);
+                        const timeAgo = getTimeAgo(postDate);
+                        
+                        const postElement = document.createElement('div');
+                        postElement.className = 'post';
+                        postElement.innerHTML = `
+                            <div class="post-header">
+                                <div class="post-avatar">${post.userInitial || 'U'}</div>
+                                <div>
+                                    <div class="post-author">${post.userName || 'Usuário'}</div>
+                                    <div class="post-time">${timeAgo}</div>
+                                </div>
+                            </div>
+                            <div class="post-content">${post.content || ''}</div>
+                            ${post.embeddedLink ? `
+                            <div class="embedded-content">
+                                <div class="embedded-preview">
+                                    <h4>${post.embeddedLink.title}</h4>
+                                    <p>${post.embeddedLink.description}</p>
+                                    <div class="domain">${post.embeddedLink.domain}</div>
+                                </div>
+                            </div>
+                            ` : ''}
+                            <div class="post-footer">
+                                <button class="like-btn">
+                                    <i class="far fa-thumbs-up"></i> Curtir (${post.likes || 0})
+                                </button>
+                                <button class="comment-btn">
+                                    <i class="far fa-comment"></i> Comentar (${post.comments || 0})
+                                </button>
+                            </div>
+                        `;
+                        
+                        userPosts.appendChild(postElement);
+                    });
+                })
+                .catch((error) => {
+                    console.error('Erro ao carregar posts:', error);
+                    userPosts.innerHTML = '<p>Erro ao carregar publicações.</p>';
+                });
+        }
+        
+        // Alternar entre abas
+        function switchTab(tabName) {
+            // Remover classe active de todas as abas
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remover classe active de todos os conteúdos
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Adicionar classe active à aba clicada
+            event.target.classList.add('active');
+            
+            // Mostrar o conteúdo correspondente
+            document.getElementById('tab-' + tabName).classList.add('active');
+            
+            // Carregar conteúdo específico se necessário
+            if (tabName === 'friends') {
+                loadFriends();
+            }
+        }
+        
+        // Carregar amigos
+        function loadFriends() {
+            const friendsList = document.getElementById('friends-list');
+            friendsList.innerHTML = '<p>Carregando amigos...</p>';
+            
+            // Simular carregamento de amigos
+            setTimeout(() => {
+                friendsList.innerHTML = `
+                    <div class="friend-card">
+                        <div class="friend-avatar">J</div>
+                        <div class="friend-name">João Silva</div>
+                        <div class="friend-mutual">15 amigos em comum</div>
+                    </div>
+                    <div class="friend-card">
+                        <div class="friend-avatar">M</div>
+                        <div class="friend-name">Maria Santos</div>
+                        <div class="friend-mutual">8 amigos em comum</div>
+                    </div>
+                    <div class="friend-card">
+                        <div class="friend-avatar">P</div>
+                        <div class="friend-name">Pedro Alves</div>
+                        <div class="friend-mutual">22 amigos em comum</div>
+                    </div>
+                `;
+            }, 1000);
+        }
+        
+        // Calcular tempo relativo (há x tempo)
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diffInSeconds = Math.floor((now - date) / 1000);
+            
+            if (diffInSeconds < 60) {
+                return 'há poucos segundos';
+            }
+            
+            const diffInMinutes = Math.floor(diffInSeconds / 60);
+            if (diffInMinutes < 60) {
+                return `há ${diffInMinutes} minuto${diffInMinutes > 1 ? 's' : ''}`;
+            }
+            
+            const diffInHours = Math.floor(diffInMinutes / 60);
+            if (diffInHours < 24) {
+                return `há ${diffInHours} hora${diffInHours > 1 ? 's' : ''}`;
+            }
+            
+            const diffInDays = Math.floor(diffInHours / 24);
+            if (diffInDays < 7) {
+                return `há ${diffInDays} dia${diffInDays > 1 ? 's' : ''}`;
+            }
+            
+            const diffInWeeks = Math.floor(diffInDays / 7);
+            if (diffInWeeks < 4) {
+                return `há ${diffInWeeks} semana${diffInWeeks > 1 ? 's' : ''}`;
+            }
+            
+            return date.toLocaleDateString('pt-BR');
+        }
+    </script>
+</body>
+</html>

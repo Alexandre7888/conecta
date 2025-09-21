@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conecta - Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .logo h1 {
+            color: #1877f2;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .logo p {
+            color: #606770;
+            font-size: 1rem;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            border: 1px solid #dddfe2;
+            border-radius: 6px;
+            background-color: #f5f6f7;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: #1877f2;
+            box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.2);
+        }
+        
+        .btn {
+            padding: 12px;
+            font-size: 18px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-bottom: 15px;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+        
+        .btn-primary {
+            background-color: #1877f2;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #166fe5;
+        }
+        
+        .btn-google {
+            background-color: #ffffff;
+            color: #757575;
+            border: 1px solid #dddfe2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-google:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .btn-google i {
+            margin-right: 10px;
+            color: #DB4437;
+        }
+        
+        .separator {
+            border-bottom: 1px solid #dadde1;
+            margin: 20px 0;
+            text-align: center;
+            line-height: 0.1em;
+        }
+        
+        .separator span {
+            background: #fff;
+            padding: 0 10px;
+            color: #606770;
+            font-size: 14px;
+        }
+        
+        .link {
+            color: #1877f2;
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .link:hover {
+            text-decoration: underline;
+        }
+        
+        .error {
+            color: #f02849;
+            font-size: 13px;
+            text-align: center;
+            margin: 10px 0;
+            display: none;
+        }
+        
+        .success {
+            color: #42b72a;
+            font-size: 13px;
+            text-align: center;
+            margin: 10px 0;
+            display: none;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 10px 0;
+        }
+        
+        .loading i {
+            color: #1877f2;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                box-shadow: none;
+                background-color: transparent;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>Conecta</h1>
+            <p>Conecte-se com pessoas ao redor do mundo</p>
+        </div>
+        
+        <div class="error" id="error-message"></div>
+        <div class="success" id="success-message"></div>
+        
+        <div class="loading" id="loading">
+            <i class="fas fa-spinner"></i>
+        </div>
+        
+        <div class="input-group">
+            <input type="email" id="login-email" placeholder="Email">
+        </div>
+        <div class="input-group">
+            <input type="password" id="login-password" placeholder="Senha">
+        </div>
+        <button class="btn btn-primary" onclick="login()">Entrar</button>
+        <div class="link" onclick="showForgotPassword()">Esqueceu a senha?</div>
+        <div class="separator"><span>ou</span></div>
+        <button class="btn btn-google" onclick="loginWithGoogle()">
+            <i class="fab fa-google"></i> Entrar com Google
+        </button>
+        <div class="link" onclick="window.location.href='register.html'">Criar nova conta</div>
+    </div>
+
+    <!-- Firebase App -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <!-- Firebase Authentication -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <!-- Firebase Realtime Database -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    
+    <script>
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDqwg6fya9F2T_0zCvVc5pzL3jK2pXqZ1Q",
+            authDomain: "html-785e3.firebaseapp.com",
+            databaseURL: "https://html-785e3-default-rtdb.firebaseio.com",
+            projectId: "html-785e3",
+            storageBucket: "html-785e3.firebasestorage.app",
+            messagingSenderId: "389467952076",
+            appId: "1:389467952076:web:fcad8e95181b9050494369",
+            measurementId: "G-KEPDBKP6MJ"
+        };
+        
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+        
+        // Função de login
+        function login() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            if (!email || !password) {
+                showError('Por favor, preencha todos os campos.');
+                return;
+            }
+            
+            showLoading();
+            
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    
+                    // Buscar dados do usuário no Realtime Database
+                    return database.ref('users/' + user.uid).once('value');
+                })
+                .then((snapshot) => {
+                    if (snapshot.exists()) {
+                        const userData = snapshot.val();
+                        
+                        // Salvar informações no localStorage
+                        localStorage.setItem('user', JSON.stringify({
+                            uid: userData.uid,
+                            email: userData.email,
+                            name: userData.name
+                        }));
+                        
+                        showSuccess('Login realizado com sucesso!');
+                        
+                        // Redirecionar para o feed
+                        setTimeout(() => {
+                            window.location.href = 'feed.html';
+                        }, 1000);
+                    } else {
+                        showError('Dados do usuário não encontrados.');
+                    }
+                })
+                .catch((error) => {
+                    showError('Erro ao fazer login: ' + error.message);
+                });
+        }
+        
+        // Login com Google
+        function loginWithGoogle() {
+            showLoading();
+            
+            const provider = new firebase.auth.GoogleAuthProvider();
+            
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    const user = result.user;
+                    
+                    // Verificar se é um novo usuário
+                    const isNewUser = result.additionalUserInfo.isNewUser;
+                    
+                    if (isNewUser) {
+                        // Salvar novo usuário no Realtime Database
+                        return database.ref('users/' + user.uid).set({
+                            uid: user.uid,
+                            name: user.displayName,
+                            email: user.email,
+                            createdAt: Date.now()
+                        });
+                    } else {
+                        // Buscar dados existentes do usuário
+                        return database.ref('users/' + user.uid).once('value');
+                    }
+                })
+                .then(() => {
+                    const user = auth.currentUser;
+                    
+                    // Salvar informações no localStorage
+                    localStorage.setItem('user', JSON.stringify({
+                        uid: user.uid,
+                        email: user.email,
+                        name: user.displayName
+                    }));
+                    
+                    showSuccess('Login com Google realizado!');
+                    
+                    // Redirecionar para o feed
+                    setTimeout(() => {
+                        window.location.href = 'feed.html';
+                    }, 1000);
+                })
+                .catch((error) => {
+                    showError('Erro ao fazer login com Google: ' + error.message);
+                });
+        }
+        
+        // Funções auxiliares
+        function showError(message) {
+            document.getElementById('error-message').textContent = message;
+            document.getElementById('error-message').style.display = 'block';
+            document.getElementById('loading').style.display = 'none';
+        }
+        
+        function showSuccess(message) {
+            document.getElementById('success-message').textContent = message;
+            document.getElementById('success-message').style.display = 'block';
+            document.getElementById('loading').style.display = 'none';
+        }
+        
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('error-message').style.display = 'none';
+            document.getElementById('success-message').style.display = 'none';
+        }
+        
+        function showForgotPassword() {
+            alert('Funcionalidade de recuperação de senha em desenvolvimento');
+        }
+        
+        // Verificar se o usuário já está logado
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                window.location.href = 'feed.html';
+            }
+        });
+    </script>
+</body>
+</html>
